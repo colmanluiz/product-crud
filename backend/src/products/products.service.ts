@@ -20,37 +20,37 @@ export class ProductsService {
     return this.productModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Product> {
-    const product = await this.productModel.findById(id).exec();
+  async findOne(slug: string): Promise<Product> {
+    const product = await this.productModel.findOne({ slug }).exec();
 
     if (!product) {
-      throw new NotFoundException(`Produto com o ID: ${id} não encontrado`);
+      throw new NotFoundException(`Produto com o ID: ${slug} não encontrado`);
     }
 
     return product;
   }
 
   async update(
-    id: string,
+    slug: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const updatedProduct = await this.productModel.findByIdAndUpdate(
-      id,
+    const updatedProduct = await this.productModel.findOneAndUpdate(
+      { slug },
       updateProductDto,
     );
 
     if (!updatedProduct) {
-      throw new NotFoundException(`Produto com o ID: ${id} não encontrado`);
+      throw new NotFoundException(`Produto com o ID: ${slug} não encontrado`);
     }
 
     return updatedProduct;
   }
 
-  async remove(id: string): Promise<Product> {
-    const deletedProduct = await this.productModel.findByIdAndDelete(id);
+  async remove(slug: string): Promise<Product> {
+    const deletedProduct = await this.productModel.findOneAndDelete({ slug });
 
     if (!deletedProduct) {
-      throw new NotFoundException(`Produto com o ID: ${id} não encontrado`);
+      throw new NotFoundException(`Produto com o ID: ${slug} não encontrado`);
     }
 
     return deletedProduct;

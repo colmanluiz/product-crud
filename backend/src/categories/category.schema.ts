@@ -9,11 +9,11 @@ export class Category {
   @Prop({ unique: true, required: true })
   name: string;
 
-  @Prop()
-  description?: string;
-
   @Prop({ unique: true, index: true })
   slug?: string;
+
+  @Prop()
+  description?: string;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

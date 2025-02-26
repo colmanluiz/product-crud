@@ -26,21 +26,21 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Product> {
-    return this.productsService.findOne(id);
+  @Get(':slug')
+  async findOne(@Param('slug') slug: string): Promise<Product> {
+    return this.productsService.findOne(slug);
   }
 
-  @Put(':id')
+  @Put(':slug')
   async update(
-    @Param('id') id: string,
+    @Param('slug') slug: string,
     @Body() updatedProductDto: UpdateProductDto,
   ): Promise<Product> {
-    return this.productsService.update(id, updatedProductDto);
+    return this.productsService.update(slug, updatedProductDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<Product> {
-    return this.productsService.remove(id);
+  @Delete(':slug')
+  async remove(@Param('slug') slug: string): Promise<Product> {
+    return this.productsService.remove(slug);
   }
 }
