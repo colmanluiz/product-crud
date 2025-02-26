@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Query } from 'mongoose';
+import slugify from 'slugify';
 
 export type CategoryDocument = HydratedDocument<Category>;
 
@@ -16,3 +17,21 @@ export class Category {
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
+
+CategorySchema.pre('save', function (next) {
+  this.slug = slugify(this.name);
+  next();
+});
+
+CategorySchema.pre(
+  'findOneAndUpdate',
+  function (this: Query<CategoryDocument, CategoryDocument>, next) {
+    const update = this.getUpdate();
+
+    if (update && typeof update === 'object' && 'name' in update) {
+      this.set({ slug: slugify(update.name as string) });
+    }
+
+    next();
+  },
+);
