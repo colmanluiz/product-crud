@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import {
+  IsArray,
+  ArrayNotEmpty,
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -9,6 +15,6 @@ export class CreateProductDto {
   price: number;
 
   @IsArray()
-  @IsNotEmpty({ message: 'O produto deve ter pelo menos uma categoria.' })
+  @ArrayNotEmpty({ message: 'O produto deve ter pelo menos uma categoria.' })
   categoryIds: string[];
 }

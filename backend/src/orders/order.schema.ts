@@ -12,7 +12,10 @@ export class Order {
   @Prop()
   total: number; //this will only be saved after sum, how I do that?
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Product' })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    required: true,
+  })
   productIds: Product[];
 }
 
