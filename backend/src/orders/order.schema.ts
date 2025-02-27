@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Product } from '../products/product.schema';
+import { Product, ProductSchema } from '../products/product.schema';
 
 export type OrderDocument = HydratedDocument<Order>;
 
@@ -20,3 +20,24 @@ export class Order {
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
+
+// OrderSchema.pre('save', async function (next) {
+//   const order = this as OrderDocument;
+
+//   try {
+//     // Acesse o modelo Product de forma correta
+//     const ProductModel = mongoose.model<Product>('Product');
+
+//     // Busca os produtos vinculados ao pedido
+//     const products = await ProductModel.find({
+//       _id: { $in: order.productIds },
+//     });
+
+//     // Calcula o total
+//     order.total = products.reduce((sum, product) => sum + product.price, 0);
+
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
