@@ -4,15 +4,27 @@ import { Order, OrderDocument } from './order.schema';
 import { Model } from 'mongoose';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Product, ProductDocument } from 'src/products/product.schema';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const createdOrder = new this.orderModel(createOrderDto);
+    const products = await this.productModel.find({
+      _id: { $in: createOrderDto.productIds },
+    });
+
+    const total = products.reduce((sum, product) => sum + product.price, 0);
+
+    const createdOrder = new this.orderModel({
+      ...createOrderDto,
+      total: total,
+    });
+
     return createdOrder.save();
   }
 
