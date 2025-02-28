@@ -29,7 +29,16 @@ export class OrdersService {
   }
 
   async findAll(): Promise<Order[]> {
-    return this.orderModel.find().populate('productIds').exec();
+    return this.orderModel
+      .find()
+      .populate({
+        path: 'productIds',
+        populate: {
+          path: 'categoryIds',
+          model: 'Category',
+        },
+      })
+      .exec();
   }
 
   async findOne(id: string): Promise<Order> {
