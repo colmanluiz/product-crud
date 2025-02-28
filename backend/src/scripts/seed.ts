@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
-import { CategorySchema } from 'src/categories/category.schema';
-import { OrderSchema } from 'src/orders/order.schema';
-import { ProductSchema } from 'src/products/product.schema';
+import { CategorySchema } from '../categories/category.schema';
+import { OrderSchema } from '../orders/order.schema';
+import { ProductSchema } from '../products/product.schema';
+import slugify from 'slugify';
 
 dotenv.config();
 
@@ -23,9 +24,13 @@ async function clearDB() {
 
 async function seedCategories(): Promise<string[]> {
   const categories = [
-    { name: 'Eletrônicos', description: 'Dispositivos eletrônicos' },
-    { name: 'Roupas', description: 'Vestuário' },
-    { name: 'Livros', description: 'Livros e eBooks' },
+    {
+      name: 'Eletrônicos',
+      description: 'Dispositivos eletrônicos',
+      slug: 'eletronicos',
+    },
+    { name: 'Roupas', description: 'Vestuário', slug: 'roupas' },
+    { name: 'Livros', description: 'Livros e eBooks', slug: 'livros' },
   ];
 
   const createdCategories = await CategoryModel.insertMany(categories);
@@ -35,12 +40,16 @@ async function seedCategories(): Promise<string[]> {
 }
 
 async function seedProducts(categoryIds: string[]): Promise<string[]> {
-  const products = Array.from({ length: 20 }, () => ({
-    name: faker.commerce.productName(),
-    description: faker.commerce.productDescription(),
-    price: parseFloat(faker.commerce.price({ min: 10, max: 1000 })),
-    categoryIds: faker.helpers.arrayElements(categoryIds, { min: 1, max: 3 }), // 1-3 categorias
-  }));
+  const products = Array.from({ length: 20 }, () => {
+    const productName = faker.commerce.productName();
+    return {
+      name: productName,
+      description: faker.commerce.productDescription(),
+      price: parseFloat(faker.commerce.price({ min: 10, max: 1000 })),
+      categoryIds: faker.helpers.arrayElements(categoryIds, { min: 1, max: 3 }),
+      slug: slugify(productName),
+    };
+  });
 
   const createdProducts = await ProductModel.insertMany(products);
   console.log(`${createdProducts.length} produtos criados.`);
@@ -49,19 +58,23 @@ async function seedProducts(categoryIds: string[]): Promise<string[]> {
 }
 
 async function seedOrders(productIds: string[]) {
-  const orders = Array.from({ length: 10 }, () => ({
-    data: faker.date.recent({ days: 30 }),
+  const orderData = Array.from({ length: 10 }, () => ({
+    date: faker.date.recent({ days: 30 }),
     productIds: faker.helpers.arrayElements(productIds, { min: 1, max: 5 }),
   }));
 
-  for (const order of orders) {
-    const products = await ProductModel.find({
-      _id: { $in: order.productIds },
-    });
+  const orders = await Promise.all(
+    orderData.map(async (orderInfo) => {
+      const products = await ProductModel.find({
+        _id: { $in: orderInfo.productIds },
+      });
 
-    if (order && 'total' in order)
-      order.total = products.reduce((sum, prod) => sum + prod.price, 0);
-  }
+      return {
+        ...orderInfo,
+        total: products.reduce((sum, prod) => sum + prod.price, 0),
+      };
+    }),
+  );
 
   await OrderModel.insertMany(orders);
   console.log(`${orders.length} pedidos criados.`);
