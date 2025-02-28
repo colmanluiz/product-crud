@@ -4,14 +4,25 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Category, CategoryDocument } from 'src/categories/category.schema';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel(Product.name) private productModel: Model<ProductDocument>,
+    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
+    const categoryIds = createProductDto.categoryIds;
+    const existingCategories = await this.categoryModel.find({
+      _id: { $in: categoryIds },
+    });
+
+    if (existingCategories.length !== categoryIds.length) {
+      throw new NotFoundException('One or more categories do not exist');
+    }
+
     const createdProduct = new this.productModel(createProductDto);
     return createdProduct.save();
   }
