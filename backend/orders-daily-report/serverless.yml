@@ -3,16 +3,22 @@ org: colman
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: product-crud
 # "service" is the name of this project. This will also be added to your AWS resource names.
-service: aws-node-serverless
+service: orders-daily-report
+
+useDotenv: true
 
 provider:
   name: aws
   runtime: nodejs20.x
+  environment:
+    MONGODB_URI: ${env:MONGODB_URI}
+    DB_NAME: ${env:DB_NAME}
+    # NESTJS_ENDPOINT: ${env:NESTJS_ENDPOINT}
 
 functions:
-  hello:
-    handler: handler.hello
+  generateDailyReport:
+    handler: handler.dailyReport
     events:
-      - httpApi:
-          path: /
-          method: get
+      - schedule:
+          rate: cron(0 23 * * ? *) # Executa todos os dias à meia-noite
+          enabled: true

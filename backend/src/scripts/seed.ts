@@ -13,7 +13,7 @@ const ProductModel = mongoose.model('Product', ProductSchema);
 const OrderModel = mongoose.model('Order', OrderSchema);
 
 async function connectDB() {
-  await mongoose.connect(`${process.env.MONGO_URI}`);
+  await mongoose.connect(`${process.env.MONGODB_URI}`);
   console.log('Conectado ao MongoDB');
 }
 
