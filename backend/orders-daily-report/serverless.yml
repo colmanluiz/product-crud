@@ -13,7 +13,7 @@ provider:
   environment:
     MONGODB_URI: ${env:MONGODB_URI}
     DB_NAME: ${env:DB_NAME}
-    # NESTJS_ENDPOINT: ${env:NESTJS_ENDPOINT}
+    NESTJS_ENDPOINT: ${env:NESTJS_ENDPOINT}
 
 functions:
   generateDailyReport:

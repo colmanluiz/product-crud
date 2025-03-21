@@ -7,7 +7,16 @@ async function connectToMongoDB() {
   return client;
 }
 
-// Handler principal
+async function sendReportToNestJs(report) {
+  const nestJsEndpoint = process.env.NESTJS_ENDPOINT;
+
+  try {
+  } catch (error) {
+    console.error('Error on sending report to backend: ', error);
+    throw error;
+  }
+}
+
 exports.dailyReport = async (event) => {
   let client;
   console.log('Iniciando geração do relatório diário de pedidos');
