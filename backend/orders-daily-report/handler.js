@@ -1,3 +1,4 @@
+const { default: axios } = require('axios');
 const dayjs = require('dayjs');
 const { MongoClient } = require('mongodb');
 
@@ -45,12 +46,16 @@ exports.dailyReport = async (event) => {
     const orderCount = todaysOrders.length;
     const averageOrderValue = orderCount > 0 ? totalSales / orderCount : 0;
 
-    const report = {
+    const reportData = {
       date: today.format('DD/MM/YYYY'),
       orderCount,
       totalSales,
       averageOrderValue,
     };
+
+    await axios.post(`${process.env.NESTJS_ENDPOINT}`, reportData, {
+      headers: { 'X-API-KEY': process.env.API_KEY },
+    });
 
     return {
       statusCode: 200,
