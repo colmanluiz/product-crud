@@ -12,6 +12,9 @@ async function sendReportToNestJs(report) {
   const nestJsEndpoint = process.env.NESTJS_ENDPOINT;
 
   try {
+    await axios.post(`${nestJsEndpoint}`, report, {
+      headers: { 'X-API-KEY': process.env.API_KEY },
+    });
   } catch (error) {
     console.error('Error on sending report to backend: ', error);
     throw error;
@@ -53,9 +56,7 @@ exports.dailyReport = async (event) => {
       averageOrderValue,
     };
 
-    await axios.post(`${process.env.NESTJS_ENDPOINT}`, reportData, {
-      headers: { 'X-API-KEY': process.env.API_KEY },
-    });
+    await sendReportToNestJs(reportData);
 
     return {
       statusCode: 200,
