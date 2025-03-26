@@ -50,7 +50,7 @@ exports.dailyReport = async (event) => {
     const averageOrderValue = orderCount > 0 ? totalSales / orderCount : 0;
 
     const reportData = {
-      date: today.format('DD/MM/YYYY'),
+      date: today.toISOString(),
       orderCount,
       totalSales,
       averageOrderValue,

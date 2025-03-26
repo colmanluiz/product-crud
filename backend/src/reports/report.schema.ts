@@ -5,7 +5,11 @@ export type ReportDocument = HydratedDocument<Report>;
 
 @Schema()
 export class Report {
-  @Prop({ required: true })
+  @Prop({
+    required: true,
+    type: Date,
+    set: (v: string) => new Date(v),
+  })
   date: Date;
 
   @Prop({ required: true })
